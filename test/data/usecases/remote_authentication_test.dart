@@ -2,6 +2,7 @@ import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
+import 'package:clean_flutter_app/domain/helpers/helpers.dart';
 import 'package:clean_flutter_app/domain/usecases/usecases.dart';
 
 import 'package:clean_flutter_app/data/usecases/usecases.dart';
@@ -12,14 +13,15 @@ class HttpClientSpy extends Mock implements HttpClient {}
 void main() {
   HttpClientSpy httpClient;
   String url;
+  RemoteAuthentication sut;
 
   setUp(() {
     httpClient = HttpClientSpy();
     url = faker.internet.httpUrl();
+    sut = RemoteAuthentication(httpClient: httpClient, url: url);
   });
 
-  test('should call HttpClient with correct values', () async {
-    final sut = RemoteAuthentication(httpClient: httpClient, url: url);
+  test('Should call HttpClient with correct values', () async {
     final params = AuthenticationParams(
       email: faker.internet.email(),
       secret: faker.internet.password(),
@@ -30,5 +32,21 @@ void main() {
       'email': params.email,
       'password': params.secret,
     }));
+  });
+
+  test('Should throw Unexpected if HttpClient returns 400', () async {
+    when(httpClient.request(
+            url: anyNamed('url'),
+            method: anyNamed('method'),
+            body: anyNamed('body')))
+        .thenThrow(HttpError.badRequest);
+
+    final params = AuthenticationParams(
+      email: faker.internet.email(),
+      secret: faker.internet.password(),
+    );
+    final future = sut.auth(params);
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
