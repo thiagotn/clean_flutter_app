@@ -11,21 +11,22 @@ import 'package:clean_flutter_app/data/http/http.dart';
 class HttpClientSpy extends Mock implements HttpClient {}
 
 void main() {
+  RemoteAuthentication sut;
+  AuthenticationParams params;
   HttpClientSpy httpClient;
   String url;
-  RemoteAuthentication sut;
 
   setUp(() {
     httpClient = HttpClientSpy();
     url = faker.internet.httpUrl();
     sut = RemoteAuthentication(httpClient: httpClient, url: url);
-  });
-
-  test('Should call HttpClient with correct values', () async {
-    final params = AuthenticationParams(
+    params = AuthenticationParams(
       email: faker.internet.email(),
       secret: faker.internet.password(),
     );
+  });
+
+  test('Should call HttpClient with correct values', () async {
     await sut.auth(params);
 
     verify(httpClient.request(url: url, method: 'post', body: {
@@ -41,10 +42,6 @@ void main() {
             body: anyNamed('body')))
         .thenThrow(HttpError.badRequest);
 
-    final params = AuthenticationParams(
-      email: faker.internet.email(),
-      secret: faker.internet.password(),
-    );
     final future = sut.auth(params);
 
     expect(future, throwsA(DomainError.unexpected));
