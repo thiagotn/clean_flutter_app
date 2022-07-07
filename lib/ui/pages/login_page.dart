@@ -42,7 +42,8 @@ class LoginPage extends StatelessWidget {
                             color: Theme.of(context).primaryColorLight,
                           ),
                         ),
-                        keyboardType: TextInputType.visiblePassword,
+                        keyboardType: TextInputType.text,
+                        obscureText: true,
                       ),
                     ),
                     TextButton(
