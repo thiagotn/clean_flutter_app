@@ -46,18 +46,23 @@ class LoginPage extends StatelessWidget {
                         top: 8,
                         bottom: 32,
                       ),
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Senha',
-                          icon: Icon(
-                            Icons.lock,
-                            color: Theme.of(context).primaryColorLight,
-                          ),
-                        ),
-                        keyboardType: TextInputType.text,
-                        obscureText: true,
-                        onChanged: presenter.validatePassword,
-                      ),
+                      child: StreamBuilder<String>(
+                          stream: presenter.passwordErrorStream,
+                          builder: (context, snapshot) {
+                            return TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Senha',
+                                icon: Icon(
+                                  Icons.lock,
+                                  color: Theme.of(context).primaryColorLight,
+                                ),
+                                errorText: snapshot.data,
+                              ),
+                              keyboardType: TextInputType.text,
+                              obscureText: true,
+                              onChanged: presenter.validatePassword,
+                            );
+                          }),
                     ),
                     TextButton(
                       onPressed: null,
