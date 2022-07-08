@@ -36,7 +36,7 @@ class LoginPage extends StatelessWidget {
                       ),
                       child: TextFormField(
                         decoration: InputDecoration(
-                          labelText: 'Password',
+                          labelText: 'Senha',
                           icon: Icon(
                             Icons.lock,
                             color: Theme.of(context).primaryColorLight,
@@ -47,7 +47,7 @@ class LoginPage extends StatelessWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: null,
                       child: Text(
                         'Entrar'.toUpperCase(),
                       ),
