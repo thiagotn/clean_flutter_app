@@ -175,4 +175,17 @@ void main() {
         matching: find.byWidgetPredicate((widget) => widget is TextButton)));
     expect(textButtonSigin.onPressed, isNotNull);
   });
+
+  testWidgets('Should enable button if form is valid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    isFormValidController.add(false);
+    await tester.pump();
+
+    var textButtonSigin = tester.widget<TextButton>(find.ancestor(
+        of: find.bySemanticsLabel('ENTRAR'),
+        matching: find.byWidgetPredicate((widget) => widget is TextButton)));
+    expect(textButtonSigin.onPressed, null);
+  });
 }
