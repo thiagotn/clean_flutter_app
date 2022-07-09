@@ -170,10 +170,10 @@ void main() {
     isFormValidController.add(true);
     await tester.pump();
 
-    var textButtonSigin = tester.widget<TextButton>(find.ancestor(
+    var button = tester.widget<TextButton>(find.ancestor(
         of: find.bySemanticsLabel('ENTRAR'),
         matching: find.byWidgetPredicate((widget) => widget is TextButton)));
-    expect(textButtonSigin.onPressed, isNotNull);
+    expect(button.onPressed, isNotNull);
   });
 
   testWidgets('Should enable button if form is valid',
@@ -183,9 +183,25 @@ void main() {
     isFormValidController.add(false);
     await tester.pump();
 
-    var textButtonSigin = tester.widget<TextButton>(find.ancestor(
+    var button = tester.widget<TextButton>(find.ancestor(
         of: find.bySemanticsLabel('ENTRAR'),
         matching: find.byWidgetPredicate((widget) => widget is TextButton)));
-    expect(textButtonSigin.onPressed, null);
+    expect(button.onPressed, null);
+  });
+
+  testWidgets('Should call authentication on form submit',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    isFormValidController.add(true);
+    await tester.pump();
+
+    await tester.tap(find.ancestor(
+        of: find.bySemanticsLabel('ENTRAR'),
+        matching: find.byWidgetPredicate((widget) => widget is TextButton)));
+
+    await tester.pump();
+
+    verify(presenter.auth()).called(1);
   });
 }
