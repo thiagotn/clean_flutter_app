@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
 
-import './protocols/protocols.dart';
+import '../protocols/protocols.dart';
 
 class LoginState {
   String emailError;
