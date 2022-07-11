@@ -26,7 +26,7 @@ class StreamLoginPresenter {
   final Authentication authentication;
   var _controller = StreamController<LoginState>.broadcast();
 
-  var _state = LoginState();
+  final _state = LoginState();
 
   Stream<String> get emailErrorStream =>
       _controller?.stream?.map((state) => state.emailError)?.distinct();
