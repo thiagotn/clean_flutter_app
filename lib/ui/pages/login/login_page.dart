@@ -34,41 +34,44 @@ class _LoginPageState extends State<LoginPage> {
             }
           });
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const LoginHeader(),
-                const Headline1(text: 'Login'),
-                Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Provider<LoginPresenter>(
-                    create: (_) => widget.presenter,
-                    child: Form(
-                      child: Column(
-                        children: [
-                          const EmailInput(),
-                          const Padding(
-                            padding: EdgeInsets.only(
-                              top: 8,
-                              bottom: 32,
+          return GestureDetector(
+            onTap: _hideKeyboard,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const LoginHeader(),
+                  const Headline1(text: 'Login'),
+                  Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Provider<LoginPresenter>(
+                      create: (_) => widget.presenter,
+                      child: Form(
+                        child: Column(
+                          children: [
+                            const EmailInput(),
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                top: 8,
+                                bottom: 32,
+                              ),
+                              child: PasswordInput(),
                             ),
-                            child: PasswordInput(),
-                          ),
-                          const LoginButton(),
-                          TextButton.icon(
-                            onPressed: () {},
-                            label: const Text(
-                              'Criar Conta',
+                            const LoginButton(),
+                            TextButton.icon(
+                              onPressed: () {},
+                              label: const Text(
+                                'Criar Conta',
+                              ),
+                              icon: const Icon(Icons.person),
                             ),
-                            icon: const Icon(Icons.person),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                )
-              ],
+                  )
+                ],
+              ),
             ),
           );
         },
@@ -80,5 +83,12 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     super.dispose();
     widget.presenter.dispose();
+  }
+
+  void _hideKeyboard() {
+    final currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
   }
 }
