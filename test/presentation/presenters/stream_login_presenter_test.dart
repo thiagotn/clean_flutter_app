@@ -106,7 +106,7 @@ void main() {
     sut.validatePassword(password);
   });
 
-  test('Should emit null if any field validation fails', () {
+  test('Should emit null if email field validation fails', () {
     mockValidation(field: 'email', value: 'error');
 
     sut.emailErrorStream

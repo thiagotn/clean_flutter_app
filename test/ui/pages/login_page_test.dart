@@ -110,7 +110,7 @@ void main() {
     expect(find.text('any error'), findsOneWidget);
   });
 
-  testWidgets('Should present no error if email is valid',
+  testWidgets('Should present no error if email is valid (with null)',
       (WidgetTester tester) async {
     await loadPage(tester);
 
@@ -126,7 +126,7 @@ void main() {
     );
   });
 
-  testWidgets('Should present no error if email is valid',
+  testWidgets('Should present no error if email is valid (with empty)',
       (WidgetTester tester) async {
     await loadPage(tester);
 
@@ -142,7 +142,7 @@ void main() {
     );
   });
 
-  testWidgets('Should present error if password is invalid',
+  testWidgets('Should present error if password is invalid (any error)',
       (WidgetTester tester) async {
     await loadPage(tester);
 
@@ -152,7 +152,7 @@ void main() {
     expect(find.text('any error'), findsOneWidget);
   });
 
-  testWidgets('Should present no error if password is valid',
+  testWidgets('Should present no error if password is valid (null)',
       (WidgetTester tester) async {
     await loadPage(tester);
 
@@ -197,7 +197,7 @@ void main() {
     expect(button.onPressed, isNotNull);
   });
 
-  testWidgets('Should enable button if form is valid',
+  testWidgets('Should disabel button if form is invalid',
       (WidgetTester tester) async {
     await loadPage(tester);
 

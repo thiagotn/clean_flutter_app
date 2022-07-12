@@ -24,4 +24,12 @@ void main() {
   test('Should return error if email is invalid', () {
     expect(sut.validate('thiagotn'), 'Campo inválido');
   });
+
+  test('Should return error if email is invalid (without prefix)', () {
+    expect(sut.validate('@gmaill.com'), 'Campo inválido');
+  });
+
+  test('Should return error if email is invalid (without @domain.com)', () {
+    expect(sut.validate('akakaa'), 'Campo inválido');
+  });
 }
