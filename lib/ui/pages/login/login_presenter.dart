@@ -1,12 +1,13 @@
+import 'package:get/state_manager.dart';
+
 abstract class LoginPresenter {
-  Stream<String> get emailErrorStream;
-  Stream<String> get passwordErrorStream;
-  Stream<bool> get isFormValidStream;
-  Stream<bool> get isLoadingStream;
-  Stream<String> get mainErrorStream;
+  RxString get emailError;
+  RxString get passwordError;
+  RxString get mainError;
+  RxBool get isFormValid;
+  RxBool get isLoading;
 
   void validateEmail(String email);
   void validatePassword(String password);
   Future<void> auth();
-  void dispose();
 }

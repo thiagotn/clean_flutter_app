@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get/get.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:clean_flutter_app/ui/pages/pages.dart';
@@ -11,54 +10,28 @@ class LoginPresenterSpy extends Mock implements LoginPresenter {}
 
 void main() {
   LoginPresenter presenter;
-  StreamController<String> emailErrorController;
-  StreamController<String> passwordErrorController;
-  StreamController<String> mainErrorController;
-  StreamController<bool> isFormValidController;
-  StreamController<bool> isLoadingController;
-
-  void initStreams() {
-    emailErrorController = StreamController<String>();
-    passwordErrorController = StreamController<String>();
-    mainErrorController = StreamController<String>();
-    isFormValidController = StreamController<bool>();
-    isLoadingController = StreamController<bool>();
-  }
+  var emailError = RxString(null); //emailErrorController;
+  var passwordError = RxString(null); //passwordErrorController;
+  var mainError = RxString(null); //mainErrorController;
+  var isFormValid = RxBool(false);
+  var isLoading = RxBool(false);
 
   void mockStreams() {
-    when(presenter.emailErrorStream)
-        .thenAnswer((_) => emailErrorController.stream);
-    when(presenter.passwordErrorStream)
-        .thenAnswer((_) => passwordErrorController.stream);
-    when(presenter.mainErrorStream)
-        .thenAnswer((_) => mainErrorController.stream);
-    when(presenter.isFormValidStream)
-        .thenAnswer((_) => isFormValidController.stream);
-    when(presenter.isLoadingStream)
-        .thenAnswer((_) => isLoadingController.stream);
-  }
-
-  void closeStreams() {
-    emailErrorController.close();
-    passwordErrorController.close();
-    isFormValidController.close();
-    isLoadingController.close();
-    mainErrorController.close();
+    when(presenter.emailError).thenAnswer((_) => emailError);
+    when(presenter.passwordError).thenAnswer((_) => passwordError);
+    when(presenter.mainError).thenAnswer((_) => mainError);
+    when(presenter.isFormValid).thenAnswer((_) => isFormValid);
+    when(presenter.isLoading).thenAnswer((_) => isLoading);
   }
 
   Future<void> loadPage(WidgetTester tester) async {
-    presenter = LoginPresenterSpy();
-    initStreams();
+    presenter = Get.put<LoginPresenter>(LoginPresenterSpy());
     mockStreams();
-    var loginPage = MaterialApp(
-      home: LoginPage(presenter),
+    var loginPage = const MaterialApp(
+      home: LoginPage(),
     );
     await tester.pumpWidget(loginPage);
   }
-
-  tearDown(() {
-    closeStreams();
-  });
 
   testWidgets('Should load with correct initial state',
       (WidgetTester tester) async {
@@ -104,7 +77,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    emailErrorController.add('any error');
+    emailError.value = 'any error';
     await tester.pump();
 
     expect(find.text('any error'), findsOneWidget);
@@ -114,7 +87,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    emailErrorController.add(null);
+    emailError.value = null;
     await tester.pump();
 
     expect(
@@ -130,7 +103,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    emailErrorController.add('');
+    emailError.value = '';
     await tester.pump();
 
     expect(
@@ -146,7 +119,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    passwordErrorController.add('any error');
+    passwordError.value = 'any error';
     await tester.pump();
 
     expect(find.text('any error'), findsOneWidget);
@@ -156,7 +129,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    passwordErrorController.add(null);
+    passwordError.value = null;
     await tester.pump();
 
     expect(
@@ -172,7 +145,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    passwordErrorController.add('');
+    passwordError.value = '';
     await tester.pump();
 
     expect(
@@ -188,7 +161,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(true);
+    isFormValid.value = true;
     await tester.pump();
 
     var button = tester.widget<TextButton>(find.ancestor(
@@ -201,7 +174,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(false);
+    isFormValid.value = false;
     await tester.pump();
 
     var button = tester.widget<TextButton>(find.ancestor(
@@ -214,7 +187,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(true);
+    isFormValid.value = true;
     await tester.pump();
 
     await tester.tap(find.ancestor(
@@ -226,10 +199,10 @@ void main() {
     verify(presenter.auth()).called(1);
   });
 
-  testWidgets('Should presente loading', (WidgetTester tester) async {
+  testWidgets('Should present loading', (WidgetTester tester) async {
     await loadPage(tester);
 
-    isLoadingController.add(true);
+    isLoading.value = true;
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -238,9 +211,9 @@ void main() {
   testWidgets('Should hide loading', (WidgetTester tester) async {
     await loadPage(tester);
 
-    isLoadingController.add(true);
+    isLoading.value = true;
     await tester.pump();
-    isLoadingController.add(false);
+    isLoading.value = false;
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -250,17 +223,9 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    mainErrorController.add('main error');
+    mainError.value = 'main error';
     await tester.pump();
 
     expect(find.text('main error'), findsOneWidget);
-  });
-
-  testWidgets('Should close streams on dispose', (WidgetTester tester) async {
-    await loadPage(tester);
-
-    addTearDown(() {
-      verify(presenter.dispose()).called(1);
-    });
   });
 }

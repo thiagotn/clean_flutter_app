@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:get/get.dart';
+import 'package:get/state_manager.dart';
 
 import '../../ui/pages/pages.dart';
 
@@ -15,22 +15,16 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
   String _email;
   String _password;
 
-  final _emailError = RxString(null);
-  final _passwordError = RxString(null);
-  final _mainError = RxString(null);
-  final _isFormValid = false.obs;
-  final _isLoading = false.obs;
-
   @override
-  Stream<String> get emailErrorStream => _emailError.stream;
+  final emailError = RxString(null);
   @override
-  Stream<String> get passwordErrorStream => _passwordError.stream;
+  final passwordError = RxString(null);
   @override
-  Stream<String> get mainErrorStream => _mainError.stream;
+  final mainError = RxString(null);
   @override
-  Stream<bool> get isFormValidStream => _isFormValid.stream;
+  final isFormValid = false.obs;
   @override
-  Stream<bool> get isLoadingStream => _isLoading.stream;
+  final isLoading = false.obs;
 
   GetxLoginPresenter({
     @required this.validation,
@@ -40,28 +34,28 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
   @override
   void validateEmail(String email) {
     _email = email;
-    _emailError.value = validation.validate(field: 'email', value: email);
+    emailError.value = validation.validate(field: 'email', value: email);
     _validateForm();
   }
 
   @override
   void validatePassword(String password) {
     _password = password;
-    _passwordError.value =
+    passwordError.value =
         validation.validate(field: 'password', value: password);
     _validateForm();
   }
 
   void _validateForm() {
-    _isFormValid.value = _emailError.value == null &&
-        _passwordError.value == null &&
+    isFormValid.value = emailError.value == null &&
+        passwordError.value == null &&
         _email != null &&
         _password != null;
   }
 
   @override
   Future<void> auth() async {
-    _isLoading.value = true;
+    isLoading.value = true;
     try {
       await authentication.auth(
         AuthenticationParams(
@@ -70,11 +64,8 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
         ),
       );
     } on DomainError catch (error) {
-      _mainError.value = error.description;
+      mainError.value = error.description;
     }
-    _isLoading.value = false;
+    isLoading.value = false;
   }
-
-  @override
-  void dispose() {}
 }

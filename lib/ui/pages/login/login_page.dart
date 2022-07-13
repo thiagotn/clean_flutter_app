@@ -1,36 +1,39 @@
+import 'package:clean_flutter_app/main/factories/pages/pages.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:get/get.dart';
 
 import '../../components/components.dart';
 import 'components/components.dart';
 import '../login/login_presenter.dart';
 
-class LoginPage extends StatefulWidget {
-  final LoginPresenter presenter;
+class LoginPage extends StatelessWidget {
+  const LoginPage({Key key}) : super(key: key);
 
-  const LoginPage(this.presenter, {Key key}) : super(key: key);
-
-  @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
+    LoginPresenter presenter =
+        Get.put<LoginPresenter>(makeGetxLoginPresenter());
+    void _hideKeyboard() {
+      final currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    }
+
     return Scaffold(
       body: Builder(
         builder: (context) {
-          widget.presenter.isLoadingStream.listen((isLoading) {
+          presenter.isLoading.listen((isLoading) {
             if (isLoading) {
-              showLoading(context);
+              showLoading();
             } else {
-              hideLoading(context);
+              hideLoading();
             }
           });
 
-          widget.presenter.mainErrorStream.listen((error) {
+          presenter.mainError.listen((error) {
             if (error != null) {
-              showErrorMessage(context, error);
+              showErrorMessage(error);
             }
           });
 
@@ -44,29 +47,26 @@ class _LoginPageState extends State<LoginPage> {
                   const Headline1(text: 'Login'),
                   Padding(
                     padding: const EdgeInsets.all(32),
-                    child: Provider<LoginPresenter>(
-                      create: (_) => widget.presenter,
-                      child: Form(
-                        child: Column(
-                          children: [
-                            const EmailInput(),
-                            const Padding(
-                              padding: EdgeInsets.only(
-                                top: 8,
-                                bottom: 32,
-                              ),
-                              child: PasswordInput(),
+                    child: Form(
+                      child: Column(
+                        children: [
+                          const EmailInput(),
+                          const Padding(
+                            padding: EdgeInsets.only(
+                              top: 8,
+                              bottom: 32,
                             ),
-                            const LoginButton(),
-                            TextButton.icon(
-                              onPressed: () {},
-                              label: const Text(
-                                'Criar Conta',
-                              ),
-                              icon: const Icon(Icons.person),
+                            child: PasswordInput(),
+                          ),
+                          const LoginButton(),
+                          TextButton.icon(
+                            onPressed: () {},
+                            label: const Text(
+                              'Criar Conta',
                             ),
-                          ],
-                        ),
+                            icon: const Icon(Icons.person),
+                          ),
+                        ],
                       ),
                     ),
                   )
@@ -77,18 +77,5 @@ class _LoginPageState extends State<LoginPage> {
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.presenter.dispose();
-  }
-
-  void _hideKeyboard() {
-    final currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus) {
-      currentFocus.unfocus();
-    }
   }
 }
