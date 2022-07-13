@@ -41,7 +41,7 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
   void validateEmail(String email) {
     _email = email;
     _emailError.value = validation.validate(field: 'email', value: email);
-    validateForm();
+    _validateForm();
   }
 
   @override
@@ -49,10 +49,10 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
     _password = password;
     _passwordError.value =
         validation.validate(field: 'password', value: password);
-    validateForm();
+    _validateForm();
   }
 
-  void validateForm() {
+  void _validateForm() {
     _isFormValid.value = _emailError.value == null &&
         _passwordError.value == null &&
         _email != null &&
@@ -62,7 +62,6 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
   @override
   Future<void> auth() async {
     _isLoading.value = true;
-    validateForm();
     try {
       await authentication.auth(
         AuthenticationParams(
@@ -74,7 +73,6 @@ class GetxLoginPresenter extends GetxController implements LoginPresenter {
       _mainError.value = error.description;
     }
     _isLoading.value = false;
-    validateForm();
   }
 
   @override
