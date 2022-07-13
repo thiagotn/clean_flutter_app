@@ -1,3 +1,4 @@
+import 'package:clean_flutter_app/domain/helpers/helpers.dart';
 import 'package:clean_flutter_app/domain/usecases/save_current_account.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/widgets.dart';
@@ -13,7 +14,11 @@ class LocalSaveCurrentAccount implements SaveCurrentAccount {
 
   @override
   Future<void> save(AccountEntity account) async {
-    saveSecureCacheStorage.save(key: 'token', value: account.token);
+    try {
+      saveSecureCacheStorage.save(key: 'token', value: account.token);
+    } catch (error) {
+      throw DomainError.unexpected;
+    }
   }
 }
 
@@ -25,7 +30,7 @@ class SaveSecureCacheStorageSpy extends Mock implements SaveSecureCacheStorage {
 }
 
 void main() {
-  test('Should call SaveCacheStorage with correct values', () async {
+  test('Should call SaveSecureCacheStorage with correct values', () async {
     final saveSecureCacheStorage = SaveSecureCacheStorageSpy();
     final sut =
         LocalSaveCurrentAccount(saveSecureCacheStorage: saveSecureCacheStorage);
@@ -34,5 +39,20 @@ void main() {
     await sut.save(account);
 
     verify(saveSecureCacheStorage.save(key: 'token', value: account.token));
+  });
+
+  test('Should throw UnexpectedError if SaveSecureCacheStorage throws',
+      () async {
+    final saveSecureCacheStorage = SaveSecureCacheStorageSpy();
+    final sut =
+        LocalSaveCurrentAccount(saveSecureCacheStorage: saveSecureCacheStorage);
+    final account = AccountEntity(faker.guid.guid());
+    when(saveSecureCacheStorage.save(
+            key: anyNamed('key'), value: anyNamed('value')))
+        .thenThrow(Exception());
+
+    final future = sut.save(account);
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
