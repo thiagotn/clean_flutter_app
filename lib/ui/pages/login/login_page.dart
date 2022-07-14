@@ -5,22 +5,24 @@ import '../../components/components.dart';
 import 'components/components.dart';
 import '../login/login_presenter.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   final LoginPresenter presenter;
 
   const LoginPage(this.presenter, {Key key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  @override
   Widget build(BuildContext context) {
+    void _hideKeyboard() {
+      final currentFocus = FocusScope.of(context);
+      if (!currentFocus.hasPrimaryFocus) {
+        currentFocus.unfocus();
+      }
+    }
+
     return Scaffold(
       body: Builder(
         builder: (context) {
-          widget.presenter.isLoadingStream.listen((isLoading) {
+          presenter.isLoadingStream.listen((isLoading) {
             if (isLoading) {
               showLoading(context);
             } else {
@@ -28,7 +30,7 @@ class _LoginPageState extends State<LoginPage> {
             }
           });
 
-          widget.presenter.mainErrorStream.listen((error) {
+          presenter.mainErrorStream.listen((error) {
             if (error != null) {
               showErrorMessage(context, error);
             }
@@ -44,8 +46,8 @@ class _LoginPageState extends State<LoginPage> {
                   const Headline1(text: 'Login'),
                   Padding(
                     padding: const EdgeInsets.all(32),
-                    child: Provider<LoginPresenter>(
-                      create: (_) => widget.presenter,
+                    child: Provider(
+                      create: (_) => presenter,
                       child: Form(
                         child: Column(
                           children: [
@@ -77,18 +79,5 @@ class _LoginPageState extends State<LoginPage> {
         },
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.presenter.dispose();
-  }
-
-  void _hideKeyboard() {
-    final currentFocus = FocusScope.of(context);
-    if (!currentFocus.hasPrimaryFocus) {
-      currentFocus.unfocus();
-    }
   }
 }
