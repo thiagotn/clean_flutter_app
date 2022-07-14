@@ -53,7 +53,9 @@ class StreamLoginPresenter implements LoginPresenter {
     @required this.saveCurrentAccount,
   });
 
-  void _update() => _controller?.add(_state);
+  void _update() {
+    _controller?.add(_state);
+  }
 
   @override
   void validateEmail(String email) {
@@ -72,9 +74,9 @@ class StreamLoginPresenter implements LoginPresenter {
 
   @override
   Future<void> auth() async {
-    _state.isLoading = true;
-    _update();
     try {
+      _state.isLoading = true;
+      _update();
       final account = await authentication.auth(
         AuthenticationParams(
           email: _state.email,
@@ -84,8 +86,8 @@ class StreamLoginPresenter implements LoginPresenter {
       await saveCurrentAccount.save(account);
     } on DomainError catch (error) {
       _state.mainError = error.description;
+      _state.isLoading = false;
     }
-    _state.isLoading = false;
     _update();
   }
 
