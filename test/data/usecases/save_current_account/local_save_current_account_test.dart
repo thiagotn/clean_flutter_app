@@ -18,15 +18,19 @@ void main() {
 
   setUp(() {
     saveSecureCacheStorage = SaveSecureCacheStorageSpy();
-    sut =
-        LocalSaveCurrentAccount(saveSecureCacheStorage: saveSecureCacheStorage);
+    sut = LocalSaveCurrentAccount(
+      saveSecureCacheStorage: saveSecureCacheStorage,
+    );
     account = AccountEntity(faker.guid.guid());
   });
 
   void mockError() {
-    when(saveSecureCacheStorage.saveSecure(
-            key: anyNamed('key'), value: anyNamed('value')))
-        .thenThrow(Exception());
+    when(
+      saveSecureCacheStorage.saveSecure(
+        key: anyNamed('key'),
+        value: anyNamed('value'),
+      ),
+    ).thenThrow(Exception());
   }
 
   test('Should call SaveSecureCacheStorage with correct values', () async {
