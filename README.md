@@ -3,7 +3,7 @@
 A new Flutter project (clean arch + tdd + design patterns)
 
 mango@gmail.com
-123456
+12345
 
 ## Getting Started
 

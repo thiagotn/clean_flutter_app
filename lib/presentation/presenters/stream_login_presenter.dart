@@ -14,6 +14,7 @@ class LoginState {
   String emailError;
   String passwordError;
   String mainError;
+  String navigateTo;
   bool isLoading = false;
 
   bool get isFormValid =>
@@ -40,6 +41,9 @@ class StreamLoginPresenter implements LoginPresenter {
   @override
   Stream<String> get mainErrorStream =>
       _controller?.stream?.map((state) => state.mainError)?.distinct();
+  @override
+  Stream<String> get navigateToStream =>
+      _controller?.stream?.map((state) => state.navigateTo)?.distinct();
   @override
   Stream<bool> get isFormValidStream =>
       _controller?.stream?.map((state) => state.isFormValid)?.distinct();
@@ -84,6 +88,7 @@ class StreamLoginPresenter implements LoginPresenter {
         ),
       );
       await saveCurrentAccount.save(account);
+      _state.navigateTo = '/surveys';
     } on DomainError catch (error) {
       _state.mainError = error.description;
       _state.isLoading = false;
